@@ -77,10 +77,20 @@ class _AuthFormState extends State<AuthForm> {
     }
     return null;
   }
+  
+  String _validateUsername(String username) {
+    if (username == null ||  username.isEmpty || username.length < 4) {
+      return 'Please enter at least 4 characters';
+    }
+    if (username.startsWith(RegExp(r'[A-Z][a-z]'))) {
+      return 'Username must start with an alphbet';
+    }
+    return null;
+  }
 
   Widget _emailField() {
     return TextFormField(
-      key: ValueKey('email'),
+      key: ValueKey('email'), //ValueKey is needed for flutter to identify values next to each other
       autocorrect: false,
       textCapitalization: TextCapitalization.none,
       enableSuggestions: false,
@@ -91,6 +101,21 @@ class _AuthFormState extends State<AuthForm> {
       ),
       onSaved: (value) {
         _userEmail = value;
+      },
+    );
+  }
+
+  
+  Widget _usernameField() {
+    return TextFormField(
+      key: ValueKey('username'),
+      autocorrect: true,
+      textCapitalization: TextCapitalization.words,
+      enableSuggestions: false,
+      validator: _validateUsername,
+      decoration: InputDecoration(labelText: 'Username'),
+      onSaved: (value) {
+        _userName = value;
       },
     );
   }
@@ -111,24 +136,7 @@ class _AuthFormState extends State<AuthForm> {
                 children: <Widget>[
                   if (!_isLogin) UserImagePicker(_pickedImage),
                   _emailField(),
-                  if (!_isLogin)
-                    TextFormField(
-                      key: ValueKey(
-                          'username'), //valuekey is needed for flutter to identify values next to each other
-                      autocorrect: true,
-                      textCapitalization: TextCapitalization.words,
-                      enableSuggestions: false,
-                      validator: (value) {
-                        if (value.isEmpty || value.length < 4) {
-                          return 'Please enter at least 4 characters';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(labelText: 'Username'),
-                      onSaved: (value) {
-                        _userName = value;
-                      },
-                    ),
+                  if (!_isLogin) _usernameField(),
                   TextFormField(
                     key: ValueKey('password'),
                     validator: (value) {
