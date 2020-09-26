@@ -27,8 +27,8 @@ dependencies:
   firebase_core: '^0.5.0'
   firebase_auth: ^0.18.0+1
   image_picker: ^0.6.5+3
-  firebase_storage: ^3.1.5
-  firebase_messaging: ^6.0.13
+  firebase_storage: ^4.0.0
+  firebase_messaging: ^7.0.0
   email_validator: '^1.0.0'
   polls: ^0.2.2
 
