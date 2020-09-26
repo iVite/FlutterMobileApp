@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "315006704502",
+    "firebase_url": "https://ivite-flutter2.firebaseio.com",
+    "project_id": "ivite-flutter2",
+    "storage_bucket": "ivite-flutter2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315006704502:android:0905493e8a2073f0007857",
+        "android_client_info": {
+          "package_name": "com.example.ivite_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "315006704502-5vflv93bv7d2lrb2qtsnscrgm8vmd0if.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVK4q_adgTvqzJubuLsbMrzyWQ5uOFlWo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "315006704502-5vflv93bv7d2lrb2qtsnscrgm8vmd0if.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
