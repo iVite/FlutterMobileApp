@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+//where you offload the auth forms to another widget
 import 'package:ivite_flutter/widgets/auth/auth_form.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -88,8 +89,9 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
+      //styling
       body: AuthForm(
-        _submitAuthForm,
+        _submitAuthForm, //passing the function down
         _isLoading,
       ),
     );

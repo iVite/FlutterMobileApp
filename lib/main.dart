@@ -18,14 +18,14 @@ class MyApp extends StatelessWidget {
         future: _initialization,
         builder: (context, appSnapshot) {
           return MaterialApp(
-            title: 'FlutterChat',
+            title: 'iVite',
             theme: ThemeData(
-              primarySwatch: Colors.pink,
-              backgroundColor: Colors.pink,
+              primarySwatch: Colors.lightGreen,
+              backgroundColor: Colors.lightGreen,
               accentColor: Colors.deepPurple,
               accentColorBrightness: Brightness.dark,
               buttonTheme: ButtonTheme.of(context).copyWith(
-                buttonColor: Colors.pink,
+                buttonColor: Colors.lightGreen,
                 textTheme: ButtonTextTheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
                 ? SplashScreen()
                 : StreamBuilder(
                     stream: FirebaseAuth.instance.authStateChanges(),
+                    //this is where you load the screens
                     builder: (ctx, userSnapshot) {
                       if (userSnapshot.connectionState ==
                           ConnectionState.waiting) {
