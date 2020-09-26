@@ -88,6 +88,13 @@ class _AuthFormState extends State<AuthForm> {
     return null;
   }
 
+  String _validatePassword(String password) {
+    if (password == null || password.isEmpty || password.length < 8) {
+      return "Password must be at least 8 characters";
+    }
+    return null;
+  }
+
   Widget _emailField() {
     return TextFormField(
       key: ValueKey('email'), //ValueKey is needed for flutter to identify values next to each other
@@ -120,6 +127,33 @@ class _AuthFormState extends State<AuthForm> {
     );
   }
 
+  Widget _passwordField() {
+    return TextFormField(
+      key: ValueKey('password'),
+      validator: _validatePassword,
+      decoration: InputDecoration(labelText: 'Password'),
+      obscureText: true, //hide text
+      onSaved: (value) {
+        _userPassword = value;
+      },
+    );
+  }
+
+  Widget _accountButton() {
+    return FlatButton(
+      //below allows you to inherit the primaryColor of the screen
+      textColor: Theme.of(context).primaryColor,
+      child: Text(_isLogin
+          ? 'Create new account'
+          : 'I already have an account'),
+      onPressed: () {
+        setState(() {
+          _isLogin = !_isLogin;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -137,40 +171,15 @@ class _AuthFormState extends State<AuthForm> {
                   if (!_isLogin) UserImagePicker(_pickedImage),
                   _emailField(),
                   if (!_isLogin) _usernameField(),
-                  TextFormField(
-                    key: ValueKey('password'),
-                    validator: (value) {
-                      if (value.isEmpty || value.length < 7) {
-                        return 'Password must be at least 7 characters long.';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Password'),
-                    obscureText: true, //hide text
-                    onSaved: (value) {
-                      _userPassword = value;
-                    },
-                  ),
+                  _passwordField(),
                   SizedBox(height: 12),
                   if (widget.isLoading) CircularProgressIndicator(),
                   if (!widget.isLoading)
                     RaisedButton(
-                      child: Text(_isLogin ? 'Login' : 'Signup'),
+                      child: Text(_isLogin ? 'Login' : 'Sign Up'),
                       onPressed: _trySubmit,
                     ),
-                  if (!widget.isLoading)
-                    FlatButton(
-                      //below allows you to inherit the primaryColor of the screen
-                      textColor: Theme.of(context).primaryColor,
-                      child: Text(_isLogin
-                          ? 'Create new account'
-                          : 'I already have an account'),
-                      onPressed: () {
-                        setState(() {
-                          _isLogin = !_isLogin;
-                        });
-                      },
-                    )
+                  if (!widget.isLoading) _accountButton(),
                 ],
               ),
             ),
