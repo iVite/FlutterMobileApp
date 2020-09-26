@@ -52,7 +52,7 @@ class MessageBubble extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: isMe
                           ? Colors.black
-                          : Theme.of(context).accentTextTheme.title.color,
+                          : Theme.of(context).accentTextTheme.headline1.color,
                     ),
                   ),
                   Text(
@@ -60,7 +60,7 @@ class MessageBubble extends StatelessWidget {
                     style: TextStyle(
                       color: isMe
                           ? Colors.black
-                          : Theme.of(context).accentTextTheme.title.color,
+                          : Theme.of(context).accentTextTheme.headline1.color,
                     ),
                     textAlign: isMe ? TextAlign.end : TextAlign.start,
                   ),
