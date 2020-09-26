@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:ivite_flutter/widgets/pickers/user_image_picker.dart';
+import 'package:email_validator/email_validator.dart';
 
 //les 317
 //manage different input states of users
@@ -10,13 +11,13 @@ import 'package:ivite_flutter/widgets/pickers/user_image_picker.dart';
 class AuthForm extends StatefulWidget {
   //les 320 - add constructor by repeating the classname
   AuthForm(
-    this.submitFn,
+    this.submitFunction,
     this.isLoading,
   );
 
   final bool isLoading;
 
-//oh you are definine the submitFn function
+//oh you are define the submitFn function
   final void Function(
     String email,
     String password,
@@ -24,7 +25,7 @@ class AuthForm extends StatefulWidget {
     File image,
     bool isLogin,
     BuildContext ctx,
-  ) submitFn;
+  ) submitFunction;
 
   @override
   _AuthFormState createState() => _AuthFormState();
@@ -59,7 +60,7 @@ class _AuthFormState extends State<AuthForm> {
 
     if (isValid) {
       _formKey.currentState.save();
-      widget.submitFn(
+      widget.submitFunction(
         _userEmail.trim(),
         _userPassword.trim(),
         _userName.trim(),
@@ -68,6 +69,30 @@ class _AuthFormState extends State<AuthForm> {
         context,
       );
     }
+  }
+
+  String _validateEmail(String email) {
+    if (email == null || email.isEmpty || !EmailValidator.validate(email)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  Widget _emailField() {
+    return TextFormField(
+      key: ValueKey('email'),
+      autocorrect: false,
+      textCapitalization: TextCapitalization.none,
+      enableSuggestions: false,
+      validator: _validateEmail,
+      keyboardType: TextInputType.emailAddress,
+      decoration: InputDecoration(
+        labelText: 'Email address',
+      ),
+      onSaved: (value) {
+        _userEmail = value;
+      },
+    );
   }
 
   @override
@@ -85,25 +110,7 @@ class _AuthFormState extends State<AuthForm> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   if (!_isLogin) UserImagePicker(_pickedImage),
-                  TextFormField(
-                    key: ValueKey('email'),
-                    autocorrect: false,
-                    textCapitalization: TextCapitalization.none,
-                    enableSuggestions: false,
-                    validator: (value) {
-                      if (value.isEmpty || !value.contains('@')) {
-                        return 'Please enter a valid email address.';
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: 'Email address',
-                    ),
-                    onSaved: (value) {
-                      _userEmail = value;
-                    },
-                  ),
+                  _emailField(),
                   if (!_isLogin)
                     TextFormField(
                       key: ValueKey(

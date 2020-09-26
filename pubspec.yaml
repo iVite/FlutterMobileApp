@@ -29,6 +29,7 @@ dependencies:
   image_picker: ^0.6.5+3
   firebase_storage:
   firebase_messaging:
+  email_validator: '^1.0.0'
 
 dev_dependencies:
   flutter_test:
