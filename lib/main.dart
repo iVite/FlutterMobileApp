@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:ivite_flutter/screens/auth_screen.dart';
 import 'package:ivite_flutter/screens/chat_screen.dart';
 import 'package:ivite_flutter/screens/splash_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:ivite_flutter/screens/auth_screen.dart';
 
 void main() => runApp(MyApp());
 
