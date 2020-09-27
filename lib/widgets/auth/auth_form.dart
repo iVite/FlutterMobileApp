@@ -77,7 +77,9 @@ class _AuthFormState extends State<AuthForm> {
   }
 
   String _validatePassword(String password) {
-    if (password == null || password.isEmpty || password.length < 8) {
+
+
+    if (!_isLogin && (password == null || password.isEmpty || password.length < 8)) {
       return "Password must be at least 8 characters";
     }
     return null;
