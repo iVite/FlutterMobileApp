@@ -24,7 +24,6 @@ class AuthForm extends StatefulWidget {
     String userName,
     File image,
     bool isLogin,
-    BuildContext ctx,
   ) submitFunction;
 
   @override
@@ -48,16 +47,6 @@ class _AuthFormState extends State<AuthForm> {
         _formKey.currentState.validate(); //this triggers all validators in form
     FocusScope.of(context).unfocus();
 
-    if (_userImageFile == null && !_isLogin) {
-      Scaffold.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please pick an image.'),
-          backgroundColor: Theme.of(context).errorColor,
-        ),
-      );
-      return;
-    }
-
     if (isValid) {
       _formKey.currentState.save();
       widget.submitFunction(
@@ -66,7 +55,6 @@ class _AuthFormState extends State<AuthForm> {
         _userName.trim(),
         _userImageFile,
         _isLogin,
-        context,
       );
     }
   }
