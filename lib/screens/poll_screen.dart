@@ -12,6 +12,7 @@ class PollScreen extends StatefulWidget {
   }
 }
 
+//
 class _PollScreenState extends State<PollScreen> {
   double option1 = 2.0;
   double option2 = 0.0;
