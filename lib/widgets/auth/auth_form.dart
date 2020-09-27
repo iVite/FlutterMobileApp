@@ -1,31 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:ivite_flutter/widgets/pickers/user_image_picker.dart';
 import 'package:email_validator/email_validator.dart';
 
-//les 317
-//manage different input states of users
-//stateful widget, need to switch between login and sign up mode and update DUI
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+
 class AuthForm extends StatefulWidget {
-  //les 320 - add constructor by repeating the classname
-  AuthForm(
-    this.submitFunction,
-    this.isLoading,
-  );
-
-  final bool isLoading;
-
-//oh you are define the submitFn function
-  final void Function(
-    String email,
-    String password,
-    String userName,
-    File image,
-    bool isLogin,
-  ) submitFunction;
-
   @override
   _AuthFormState createState() => _AuthFormState();
 }
@@ -33,29 +18,89 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>(); //_formKey to form to validate
   var _isLogin = true;
+  var _isDoingAuth = false;
   var _userEmail = '';
   var _userName = '';
   var _userPassword = '';
   File _userImageFile;
 
+  final _firebaseAuth = FirebaseAuth.instance;
+  final _firebaseStorage = FirebaseStorage.instance;
+  final _firebaseFireStore = FirebaseFirestore.instance;
+
+
+  void _showSnackBar(String message) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).errorColor,
+        duration: Duration(seconds: 5),
+      ),
+    );
+  }
+  
+  Future<void> _createNewUser(String email, String password, String username, File image) async {
+    UserCredential authResult = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password
+    ).catchError((err) => _showSnackBar('An error occurred: $err'));
+
+    var imageUrl = '';
+
+    if (image != null) {
+      final imageRef = _firebaseStorage
+          .ref()
+          .child('user_image')
+          .child('${authResult.user.uid}.jpg');
+      await imageRef.putFile(image).onComplete;
+      imageUrl = await imageRef.getDownloadURL();
+    }
+    await _firebaseFireStore
+        .collection('users')
+        .doc(authResult.user.uid)
+        .set({
+      'username': username,
+      'email': email,
+      'image_url': imageUrl.isEmpty ? null : imageUrl,
+    });
+  }
+
+  Future<void> _login(String email, String password) async {
+    await _firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    )
+    .catchError((err) => _showSnackBar('An error occurred: $err'));
+  }
+
   void _pickedImage(File image) {
     _userImageFile = image;
   }
 
-  void _trySubmit() {
+  void _trySubmit() async{
     final isValid =
         _formKey.currentState.validate(); //this triggers all validators in form
     FocusScope.of(context).unfocus();
 
     if (isValid) {
       _formKey.currentState.save();
-      widget.submitFunction(
-        _userEmail.trim(),
-        _userPassword.trim(),
-        _userName.trim(),
-        _userImageFile,
-        _isLogin,
-      );
+      setState(() {
+        _isDoingAuth = true;
+      });
+
+      try {
+        if (_isLogin) {
+          await _login(_userEmail, _userPassword);
+        } else {
+          await _createNewUser(
+              _userEmail, _userPassword, _userName, _userImageFile);
+        }
+      } finally {
+        setState(() {
+          _isDoingAuth = false;
+        });
+      }
+
     }
   }
 
@@ -71,14 +116,12 @@ class _AuthFormState extends State<AuthForm> {
       return 'Please enter at least 4 characters';
     }
     if (username.startsWith(RegExp(r'[A-Z][a-z]'))) {
-      return 'Username must start with an alphbet';
+      return 'Username must start with an alphabet';
     }
     return null;
   }
 
   String _validatePassword(String password) {
-
-
     if (!_isLogin && (password == null || password.isEmpty || password.length < 8)) {
       return "Password must be at least 8 characters";
     }
@@ -144,6 +187,8 @@ class _AuthFormState extends State<AuthForm> {
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -163,13 +208,13 @@ class _AuthFormState extends State<AuthForm> {
                   if (!_isLogin) _usernameField(),
                   _passwordField(),
                   SizedBox(height: 12),
-                  if (widget.isLoading) CircularProgressIndicator(),
-                  if (!widget.isLoading)
+                  if (_isDoingAuth) CircularProgressIndicator(),
+                  if (!_isDoingAuth)
                     RaisedButton(
                       child: Text(_isLogin ? 'Login' : 'Sign Up'),
                       onPressed: _trySubmit,
                     ),
-                  if (!widget.isLoading) _accountButton(),
+                  if (!_isDoingAuth) _accountButton(),
                 ],
               ),
             ),
@@ -178,4 +223,8 @@ class _AuthFormState extends State<AuthForm> {
       ),
     );
   }
+
+
+
+
 }
