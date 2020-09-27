@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 //where you offload the auth forms to another widget
 import 'package:ivite_flutter/widgets/auth/auth_form.dart';
+import 'package:logger/logger.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -15,8 +16,69 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final _auth = FirebaseAuth.instance;
+  final _firebaseAuth = FirebaseAuth.instance;
+  final _firebaseStorage = FirebaseStorage.instance;
+  final _firebaseFireStore = FirebaseFirestore.instance;
+  final Logger LOGGER = Logger();
   var _isLoading = false;
+
+
+  Future<void> _createNewUser(String email, String password, String username, File image) async {
+    UserCredential authResult = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password
+    );
+
+    var imageUrl = '';
+
+    if (image != null) {
+      final imageRef = _firebaseStorage
+          .ref()
+          .child('user_image')
+          .child('${authResult.user.uid}.jpg');
+      await imageRef.putFile(image).onComplete;
+      imageUrl = await imageRef.getDownloadURL();
+    }
+
+    await _firebaseFireStore
+      .collection('users')
+      .doc(authResult.user.uid)
+      .set({
+        'username': username,
+        'email': email,
+        'image_url': imageUrl.isEmpty ? null : imageUrl,
+      });
+      // .catchError((err) {
+      //   _showErrorMessage('An error occurred. Please try again');
+      // });
+  }
+
+  Future<void> _login(String email, String password) async {
+    void handleLoginError(PlatformException e) {
+      var message = 'Invalid password/email';
+
+      if (e.message != null) {
+        message = e.message;
+      }
+      _showErrorMessage(message);
+    }
+
+    await _firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    //.catchError(handleLoginError, test: (e) => e is PlatformException);
+  }
+
+  void _showErrorMessage(String errMsg) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errMsg),
+        backgroundColor: Theme.of(context).errorColor,
+        duration: Duration(seconds: 5),
+      ),
+    );
+  }
 
   void _submitAuthForm(
     String email,
@@ -24,61 +86,17 @@ class _AuthScreenState extends State<AuthScreen> {
     String username,
     File image,
     bool isLogin,
-    BuildContext ctx,
   ) async {
-    UserCredential authResult;
-
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      setState(() {
-        _isLoading = true;
-      });
       if (isLogin) {
-        authResult = await _auth.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+        await _login(email, password);
       } else {
-        authResult = await _auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-
-        final ref = FirebaseStorage.instance
-            .ref()
-            .child('user_image')
-            .child(authResult.user.uid + '.jpg');
-
-        await ref.putFile(image).onComplete;
-
-        final url = await ref.getDownloadURL();
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(authResult.user.uid)
-            .set({
-          'username': username,
-          'email': email,
-          'image_url': url,
-        });
+        await _createNewUser(email, password, username, image);
       }
-    } on PlatformException catch (err) {
-      var message = 'An error occurred, pelase check your credentials!';
-
-      if (err.message != null) {
-        message = err.message;
-      }
-
-      Scaffold.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Theme.of(ctx).errorColor,
-        ),
-      );
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (err) {
-      print(err);
+    } finally {
       setState(() {
         _isLoading = false;
       });

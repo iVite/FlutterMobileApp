@@ -38,6 +38,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // make sure this matches the application Id in Firebase as well
         applicationId "com.example.ivite_flutter"
         minSdkVersion 16
         targetSdkVersion 28

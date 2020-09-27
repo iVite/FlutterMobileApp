@@ -24,7 +24,6 @@ class AuthForm extends StatefulWidget {
     String userName,
     File image,
     bool isLogin,
-    BuildContext ctx,
   ) submitFunction;
 
   @override
@@ -48,16 +47,6 @@ class _AuthFormState extends State<AuthForm> {
         _formKey.currentState.validate(); //this triggers all validators in form
     FocusScope.of(context).unfocus();
 
-    if (_userImageFile == null && !_isLogin) {
-      Scaffold.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please pick an image.'),
-          backgroundColor: Theme.of(context).errorColor,
-        ),
-      );
-      return;
-    }
-
     if (isValid) {
       _formKey.currentState.save();
       widget.submitFunction(
@@ -66,7 +55,6 @@ class _AuthFormState extends State<AuthForm> {
         _userName.trim(),
         _userImageFile,
         _isLogin,
-        context,
       );
     }
   }
@@ -84,6 +72,15 @@ class _AuthFormState extends State<AuthForm> {
     }
     if (username.startsWith(RegExp(r'[A-Z][a-z]'))) {
       return 'Username must start with an alphbet';
+    }
+    return null;
+  }
+
+  String _validatePassword(String password) {
+
+
+    if (!_isLogin && (password == null || password.isEmpty || password.length < 8)) {
+      return "Password must be at least 8 characters";
     }
     return null;
   }
@@ -120,6 +117,33 @@ class _AuthFormState extends State<AuthForm> {
     );
   }
 
+  Widget _passwordField() {
+    return TextFormField(
+      key: ValueKey('password'),
+      validator: _validatePassword,
+      decoration: InputDecoration(labelText: 'Password'),
+      obscureText: true, //hide text
+      onSaved: (value) {
+        _userPassword = value;
+      },
+    );
+  }
+
+  Widget _accountButton() {
+    return FlatButton(
+      //below allows you to inherit the primaryColor of the screen
+      textColor: Theme.of(context).primaryColor,
+      child: Text(_isLogin
+          ? 'Create new account'
+          : 'I already have an account'),
+      onPressed: () {
+        setState(() {
+          _isLogin = !_isLogin;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -137,40 +161,15 @@ class _AuthFormState extends State<AuthForm> {
                   if (!_isLogin) UserImagePicker(_pickedImage),
                   _emailField(),
                   if (!_isLogin) _usernameField(),
-                  TextFormField(
-                    key: ValueKey('password'),
-                    validator: (value) {
-                      if (value.isEmpty || value.length < 7) {
-                        return 'Password must be at least 7 characters long.';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Password'),
-                    obscureText: true, //hide text
-                    onSaved: (value) {
-                      _userPassword = value;
-                    },
-                  ),
+                  _passwordField(),
                   SizedBox(height: 12),
                   if (widget.isLoading) CircularProgressIndicator(),
                   if (!widget.isLoading)
                     RaisedButton(
-                      child: Text(_isLogin ? 'Login' : 'Signup'),
+                      child: Text(_isLogin ? 'Login' : 'Sign Up'),
                       onPressed: _trySubmit,
                     ),
-                  if (!widget.isLoading)
-                    FlatButton(
-                      //below allows you to inherit the primaryColor of the screen
-                      textColor: Theme.of(context).primaryColor,
-                      child: Text(_isLogin
-                          ? 'Create new account'
-                          : 'I already have an account'),
-                      onPressed: () {
-                        setState(() {
-                          _isLogin = !_isLogin;
-                        });
-                      },
-                    )
+                  if (!widget.isLoading) _accountButton(),
                 ],
               ),
             ),
