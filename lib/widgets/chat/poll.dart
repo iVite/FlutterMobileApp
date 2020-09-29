@@ -21,7 +21,7 @@ class _PollWidgetState extends State<PollWidget> {
   final _firebaseFireStore = FirebaseFirestore.instance;
   final _currentUser = FirebaseAuth.instance.currentUser;
   static final responseTypes = ["YES", "NO", "MAYBE"];
-  static final DateFormat dateFormatter = DateFormat('MMMM d, y, jm');
+  static final DateFormat  dateFormatter = DateFormat('MMMM d, y, Hm');
   final responseColors= {
     "YES": Colors.lightGreen,
     "NO": Colors.red,
@@ -39,14 +39,14 @@ class _PollWidgetState extends State<PollWidget> {
     fontWeight: FontWeight.w800,
     fontFamily: 'Roboto',
     letterSpacing: 0.5,
-    fontSize: 18,
+    fontSize: 16,
     height: 3,
   );
 
 
   Future<void> submitPollResponse(String pollResponse) async {
     await _firebaseFireStore.collection('polls').doc(_pollId).update(
-      {'responses.${_currentUser.email}': pollResponse}
+      {'responses.${_currentUser.uid}': pollResponse}
     );
     setState(() {
       _pollData.responses[_currentUser.email] = pollResponse;
@@ -92,7 +92,7 @@ class _PollWidgetState extends State<PollWidget> {
     return Row(
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(left: 5, right: 20),
+          padding: EdgeInsets.only(left: 5, right: 10),
           child: Icon(
             Icons.access_time,
             color: Colors.green,
@@ -109,7 +109,7 @@ class _PollWidgetState extends State<PollWidget> {
     return Row(
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(left: 5, right: 20),
+          padding: EdgeInsets.only(left: 5, right: 10),
           child: Icon(
             Icons.location_on,
             color: Colors.green,
@@ -135,7 +135,8 @@ class _PollWidgetState extends State<PollWidget> {
         textColor: Colors.white,
         color: responseColors[r],
         disabledColor: Colors.black,
-        onPressed: _pollData.responses[_currentUser.email] == r ? null: responseFunctions[r],
+        disabledTextColor: Colors.white10,
+        onPressed: _pollData.responses[_currentUser.uid] == r ? null: responseFunctions[r],
         shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
       )
     ).toList();
@@ -146,18 +147,19 @@ class _PollWidgetState extends State<PollWidget> {
     );
   }
 
-  Widget responseCountRow() {
+  Widget _responseCountRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: responseTypes.map((r) =>
-        Text("$r: ${_getPollResponseCount(r)}")
+        Text(" $r: ${_getPollResponseCount(r)}  ")
       ).toList(),
     );
   }
 
   Future<PollData> _getPollData() async{
     final firebasePollData = await _firebaseFireStore.collection('polls').doc(_pollId).get();
-    return PollData.fromJson(firebasePollData.data());
+    final data = firebasePollData.data();
+    return PollData.fromJson(data);
   }
 
   Widget _getMainPollContainer() {
@@ -173,6 +175,7 @@ class _PollWidgetState extends State<PollWidget> {
               _timeRow(_pollData.time),
               _locationRow(_pollData.address),
               _votingRow(),
+              _responseCountRow(),
             ],
           )
       )

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:ivite_flutter/screens/create_event_screen.dart';
 
 import 'package:ivite_flutter/widgets/chat/messages.dart';
 import 'package:ivite_flutter/widgets/chat/new_message.dart';
@@ -54,10 +55,29 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 value: 'logout',
               ),
+              DropdownMenuItem(
+                child: Container(
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.poll),
+                      SizedBox(width: 8),
+                      Text('Create Event'),
+                    ],
+                  ),
+                ),
+                value: 'create_event',
+              ),
             ],
             onChanged: (itemIdentifier) {
               if (itemIdentifier == 'logout') {
                 FirebaseAuth.instance.signOut();
+              } else if (itemIdentifier == 'create_event') {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CreateEventScreen()
+                    )
+                );
               }
             },
           ),
