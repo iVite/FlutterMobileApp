@@ -45,9 +45,9 @@ class MainDrawer extends StatelessWidget {
             child: Text(
               'Navigation',
               style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 30,
-                color: Theme.of(context).accentColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Colors.black,
               ),
             ),
           ),
