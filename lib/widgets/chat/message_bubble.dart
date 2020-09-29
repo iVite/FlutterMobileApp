@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ivite_flutter/model/chat_message.dart';
 
 class MessageBubble extends StatelessWidget {
   MessageBubble(
@@ -10,10 +11,41 @@ class MessageBubble extends StatelessWidget {
   });
 
   final Key key;
-  final String message;
+  final ChatMessage message;
   final String userName;
   final String userImage;
   final bool isMe;
+
+
+  Widget _getMessageWidget(BuildContext context) {
+    if (this.message.type == MessageType.text) {
+      return Column(
+        crossAxisAlignment:
+        isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            userName,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: isMe
+                  ? Colors.black
+                  : Theme.of(context).accentTextTheme.headline1.color,
+            ),
+          ),
+          Text(
+            message.content,
+            style: TextStyle(
+              color: isMe
+                  ? Colors.black
+                  : Theme.of(context).accentTextTheme.headline1.color,
+            ),
+            textAlign: isMe ? TextAlign.end : TextAlign.start,
+          ),
+        ],
+      );
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,30 +74,7 @@ class MessageBubble extends StatelessWidget {
                 vertical: 16,
                 horizontal: 8,
               ),
-              child: Column(
-                crossAxisAlignment:
-                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    userName,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: isMe
-                          ? Colors.black
-                          : Theme.of(context).accentTextTheme.headline1.color,
-                    ),
-                  ),
-                  Text(
-                    message,
-                    style: TextStyle(
-                      color: isMe
-                          ? Colors.black
-                          : Theme.of(context).accentTextTheme.headline1.color,
-                    ),
-                    textAlign: isMe ? TextAlign.end : TextAlign.start,
-                  ),
-                ],
-              ),
+              child: _getMessageWidget(context)
             ),
           ],
         ),
@@ -73,11 +82,18 @@ class MessageBubble extends StatelessWidget {
           top: 0,
           left: isMe ? null : 120,
           right: isMe ? 120 : null,
-          child: CircleAvatar(
-            backgroundImage: NetworkImage(
-              userImage,
-            ),
-          ),
+          child: userImage == null || userImage.length == 0
+              ? CircleAvatar(
+                  child: Image(
+                    image: AssetImage('assets/images/no_profile_pic.jpg'),
+                  ),
+
+                )
+              : CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    userImage,
+                  ),
+                ),
         ),
       ],
       overflow: Overflow.visible,
