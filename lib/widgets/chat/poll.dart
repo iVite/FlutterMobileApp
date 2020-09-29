@@ -129,6 +129,7 @@ class _PollWidgetState extends State<PollWidget> {
         color: Colors.lightGreen,
         disabledTextColor: Colors.black87,
         onPressed: _pollData.responses[_currentUser.email] == r ? null: responseFunctions[r],
+        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
       )
     ).toList();
 
