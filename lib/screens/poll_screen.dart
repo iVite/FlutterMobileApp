@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:polls/polls.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class PollScreen extends StatefulWidget {
   PollScreen({Key key, this.title}) : super(key: key);
@@ -36,7 +34,6 @@ class _PollScreenState extends State<PollScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final user = FirebaseAuth.instance.currentUser;
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(

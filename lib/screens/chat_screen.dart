@@ -63,9 +63,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: Text("The Drawer!"),
-      ),
       body: Container(
         child: Column(
           children: <Widget>[
