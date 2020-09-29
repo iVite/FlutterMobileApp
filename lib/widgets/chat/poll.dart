@@ -196,11 +196,11 @@ class _PollWidgetState extends State<PollWidget> {
   }
 
   Widget _getLoadingWidget() {
-    SizedBox(
+    return SizedBox(
       child: CircularProgressIndicator(),
       height: 60,
     );
-  };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,12 +212,11 @@ class _PollWidgetState extends State<PollWidget> {
                _pollData = snapshot.data;
                return _getMainPollContainer();
             } else if (snapshot.hasError) {
-               return _getErrorWidget(snapshot.error.toString())
+               return _getErrorWidget(snapshot.error.toString());
             } else {
                return _getLoadingWidget();
             }
           }
-        ):
-        _getMainPollContainer();
+        ) : _getMainPollContainer();
   }
 }
