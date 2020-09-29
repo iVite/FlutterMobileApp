@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:ivite_flutter/screens/poll_screen.dart';
 
 import 'package:ivite_flutter/widgets/chat/messages.dart';
 import 'package:ivite_flutter/widgets/chat/new_message.dart';

@@ -1,8 +1,17 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import "../screens/poll_screen.dart";
 
 class MainDrawer extends StatelessWidget {
+  void selectCategory(BuildContext ctx) {
+    Navigator.of(ctx).push(
+      MaterialPageRoute(builder: (_) {
+        return PollScreen();
+      }),
+    ); //ctx here is just function input placeholder
+  }
+
   //builder method
   Widget buildListTile(String title, IconData icon, Function tapHandler) {
     return ListTile(
@@ -32,20 +41,21 @@ class MainDrawer extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.all(20),
             alignment: Alignment.centerLeft,
-            color: Theme.of(context).accentColor,
+            color: Theme.of(context).primaryColor,
             child: Text(
-              'iVite Stuff',
+              'Navigation',
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 30,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).accentColor,
               ),
             ),
           ),
           SizedBox(
             height: 20,
           ),
-          buildListTile('Meals', Icons.restaurant, () {}),
+          buildListTile(
+              'Create a Poll', Icons.poll, () => selectCategory(context)),
           buildListTile('Settings', Icons.settings, () {}),
         ],
       ),
