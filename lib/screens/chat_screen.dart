@@ -4,7 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:ivite_flutter/widgets/chat/messages.dart';
 import 'package:ivite_flutter/widgets/chat/new_message.dart';
-import '../widgets/main_drawer.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -34,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('iVite'),
+        title: Text('FlutterChat'),
         actions: [
           DropdownButton(
             underline: Container(),
@@ -64,7 +63,9 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      drawer: MainDrawer(),
+      drawer: Drawer(
+        child: Text("The Drawer!"),
+      ),
       body: Container(
         child: Column(
           children: <Widget>[
