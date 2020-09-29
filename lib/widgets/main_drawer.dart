@@ -4,13 +4,6 @@ import 'package:flutter/material.dart';
 import "../screens/poll_screen.dart";
 
 class MainDrawer extends StatelessWidget {
-  //passed props down from chat screen to poll screen
-  // final pollLocation;
-  // final pollDate;
-  // final createdPoll;/
-
-  // MainDrawer(this.pollLocation, this.pollDate, this.createdPoll);
-
   void selectCategory(BuildContext ctx) {
     Navigator.of(ctx).push(
       MaterialPageRoute(builder: (_) {

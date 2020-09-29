@@ -18,25 +18,8 @@ class PollScreen extends StatefulWidget {
 
 //
 class _PollScreenState extends State<PollScreen> {
-  var pollLocation;
-
-  void _sendPoll() async {
-    FocusScope.of(context).unfocus();
-    final user = FirebaseAuth.instance.currentUser;
-    final userData = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-    FirebaseFirestore.instance.collection('poll').add(
-      {
-        'pollDate': selectedDate,
-        'pollLocation': pollLocation,
-        'createdAt': Timestamp.now(),
-        'userId': user.uid,
-        'username': userData.data()['username']
-      },
-    );
-  }
+  var _pollLocation = '';
+  var _pollDate = '';
 
   DateTime selectedDate = DateTime.now();
 
@@ -47,21 +30,17 @@ class _PollScreenState extends State<PollScreen> {
         firstDate: DateTime(2015, 8),
         lastDate: DateTime(2101));
     if (picked != null && picked != selectedDate)
-      setState(
-        () {
-          selectedDate = picked;
-        },
-      );
+      setState(() {
+        selectedDate = picked;
+        print(selectedDate);
+      });
   }
 
   void selectCategory(BuildContext ctx) {
-    _sendPoll();
     Navigator.of(ctx).push(
-      MaterialPageRoute(
-        builder: (_) {
-          return ChatScreen();
-        },
-      ),
+      MaterialPageRoute(builder: (_) {
+        return ChatScreen();
+      }),
     ); //ctx here is just function input placeholder
   }
 
@@ -69,12 +48,10 @@ class _PollScreenState extends State<PollScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Create Your Poll",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
+        title: Text("Create Your Poll",
+            style: TextStyle(
+              color: Colors.black,
+            )),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Center(
@@ -115,18 +92,16 @@ class _PollScreenState extends State<PollScreen> {
                 autocorrect: false,
                 textCapitalization: TextCapitalization.none,
                 enableSuggestions: false,
-                onChanged: (value) {
-                  pollLocation = value;
-                  print(pollLocation);
+                onSaved: (value) {
+                  _pollLocation = value;
+                  print(_pollLocation);
                 },
               ),
             ),
             Container(
               margin: const EdgeInsets.only(top: 20.0),
               child: RaisedButton(
-                onPressed: () => {
-                  selectCategory(context),
-                },
+                onPressed: () => {selectCategory(context)},
                 child: Text('Create Poll!'),
               ),
             ),

@@ -5,7 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:ivite_flutter/widgets/chat/messages.dart';
 import 'package:ivite_flutter/widgets/chat/new_message.dart';
 import '../widgets/main_drawer.dart';
-import '../widgets/poll/polls_shelf.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -69,7 +68,6 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Container(
         child: Column(
           children: <Widget>[
-            PollsShelf(),
             Expanded(
               child: Messages(),
             ),
