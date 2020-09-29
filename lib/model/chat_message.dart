@@ -12,7 +12,7 @@ enum MessageType {
 @JsonSerializable()
 class ChatMessage {
   final MessageType type;
-  final String content;
+  final dynamic content;
 
   ChatMessage(this.type, this.content);
 

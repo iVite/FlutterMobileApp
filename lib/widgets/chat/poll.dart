@@ -21,6 +21,14 @@ class _PollWidgetState extends State<PollWidget> {
   final _firebaseFireStore = FirebaseFirestore.instance;
   final _currentUser = FirebaseAuth.instance.currentUser;
   static final responseTypes = ["YES", "NO", "MAYBE"];
+  static final DateFormat dateFormatter = DateFormat('MMMM d, y, jm');
+  final responseColors= {
+    "YES": Colors.lightGreen,
+    "NO": Colors.red,
+    "MAYBE": Colors.blue,
+  };
+
+
   PollData _pollData;
 
   _PollWidgetState(this._pollId);
@@ -81,11 +89,9 @@ class _PollWidgetState extends State<PollWidget> {
   }
 
   Widget _timeRow(DateTime date) {
-    final DateFormat formatter = DateFormat('MMMM d, y, jm');
-
     return Row(
       children: <Widget>[
-        Container(
+        Padding(
           padding: EdgeInsets.only(left: 5, right: 20),
           child: Icon(
             Icons.access_time,
@@ -93,7 +99,7 @@ class _PollWidgetState extends State<PollWidget> {
             size: 18,
           ),
         ),
-        Text(formatter.format(date))
+        Text(dateFormatter.format(date))
       ],
     );
   }
@@ -102,7 +108,7 @@ class _PollWidgetState extends State<PollWidget> {
   Widget _locationRow(String location) {
     return Row(
       children: <Widget>[
-        Container(
+        Padding(
           padding: EdgeInsets.only(left: 5, right: 20),
           child: Icon(
             Icons.location_on,
@@ -122,12 +128,13 @@ class _PollWidgetState extends State<PollWidget> {
       "MAYBE": submitMaybeResponse,
     };
 
+
     final buttons = responseTypes.map((r) =>
-      OutlineButton(
+      RaisedButton(
         child: Text(r),
         textColor: Colors.white,
-        color: Colors.lightGreen,
-        disabledTextColor: Colors.black87,
+        color: responseColors[r],
+        disabledColor: Colors.black,
         onPressed: _pollData.responses[_currentUser.email] == r ? null: responseFunctions[r],
         shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
       )
@@ -172,15 +179,43 @@ class _PollWidgetState extends State<PollWidget> {
     );
   }
 
+  Widget _getErrorWidget(String error){
+    return Column(
+      children: [
+        Icon(
+          Icons.error_outline,
+          color: Colors.red,
+          size: 40
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Text('Error Loading Poll: ${error}'),
+        )
+      ],
+    );
+  }
+
+  Widget _getLoadingWidget() {
+    SizedBox(
+      child: CircularProgressIndicator(),
+      height: 60,
+    );
+  };
+
   @override
   Widget build(BuildContext context) {
     return _pollData == null ?
         FutureBuilder(
           future: _getPollData(),
-          builder: (context, AsyncSnapshot<PollData> pollData) {
-            _pollData = pollData.data;
-            return _getMainPollContainer();
-
+          builder: (context, AsyncSnapshot<PollData> snapshot) {
+            if (snapshot.hasData) {
+               _pollData = snapshot.data;
+               return _getMainPollContainer();
+            } else if (snapshot.hasError) {
+               return _getErrorWidget(snapshot.error.toString())
+            } else {
+               return _getLoadingWidget();
+            }
           }
         ):
         _getMainPollContainer();
